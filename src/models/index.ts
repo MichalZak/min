@@ -45,7 +45,8 @@ export interface Placement{
     shortName?:string;
 }
 
-export class Visit{
+export class Visit {
+    public id?:string;
     public date?:string;
     public note?:string;
     public placements?: Placement[];

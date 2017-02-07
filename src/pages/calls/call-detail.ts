@@ -56,6 +56,7 @@ export class CallDetailPage {
 
  addVisit(){
     this.viewVisit(new Visit({
+      id: Date.now(),
       date: moment().format('YYYY-MM-DD'),
     }));
   }
