@@ -1,0 +1,36 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>
+        Calls
+    </ion-title>
+    <ion-buttons end>
+        <button ion-button icon-only (click)="add()"><ion-icon name="add-circle"></ion-icon></button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <ion-list>
+    <ion-item-sliding *ngFor="let item of calls" >
+      <button ion-item (click)="view(item)" >      
+            <h2>{{item.name}}</h2>
+            <ion-note>
+              {{item.note }}
+            </ion-note>
+            <p item-right align="right">
+              {{item.date | date:'MMM dd' }}<br/>
+              <ion-badge item-right *ngIf="item.priority != null && item.priority > 0" >{{item.rating}}</ion-badge>
+            </p>
+
+      </button> 
+      <ion-item-options>
+         <button ion-button color="danger" (click)="remove(item)">
+            Delete
+         </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+</ion-content>

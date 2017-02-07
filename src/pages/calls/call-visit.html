@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Visit</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-item>
+        <ion-label>Date:</ion-label>
+        <ion-datetime
+          displayFormat="DDD(D) MMM YYYY" 
+          pickerFormat="DDD(D) MMM YYYY" 
+          [min]="minDate" 
+          [max]="maxDate"
+          placeholder="Select Return Date"
+          [(ngModel)]="visit.date">
+        </ion-datetime>
+  </ion-item>
+  <ion-item>
+        <ion-label floating>Note</ion-label>
+        <ion-textarea 
+              [(ngModel)]="visit.note" 
+              rows="3" 
+              playholder="Enter your notes here" ></ion-textarea>
+  </ion-item>
+
+  
+  <button (click)="addVideo()" ion-button icon-left><ion-icon name="logo-youtube"></ion-icon> Add Video </button>
+  <button (click)="addBook()"  ion-button icon-left><ion-icon name="book"></ion-icon> Add Book/Brochure</button>
+  <!--
+  <button (click)="addMag()"  ion-button icon-left><ion-icon name="book"></ion-icon> Add Magazine</button>
+  <button (click)="addTract()"  ion-button icon-left><ion-icon name="document"></ion-icon> Add Tract</button>
+  -->
+  <ion-label>Placements:</ion-label>
+   <ion-list>
+    <ion-item-sliding *ngFor="let item of visit.placements; let i = index;" >
+      <button ion-item >      
+            <h2>({{item.type}}) {{item.name}}</h2>
+      </button> 
+      <ion-item-options>
+         <button ion-button color="danger" (click)="remove(i)">
+            Remove
+         </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+</ion-content>

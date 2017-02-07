@@ -1,0 +1,90 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Name: {{call.name}} </ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-item>
+    <ion-label floating>Name</ion-label>
+    <ion-input type="text" [(ngModel)]="call.name"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label floating>Address</ion-label>
+    <ion-input type="text" [(ngModel)]="call.address"></ion-input>
+  </ion-item>
+  <ion-item>
+        <ion-label>Come Back:</ion-label>
+        <ion-datetime
+          displayFormat="DDD(D) MMM YYYY" 
+          pickerFormat="DDD(D) MMM YYYY" 
+          [min]="minDate" 
+          [max]="maxDate"
+          placeholder="Select Return Date"
+          [(ngModel)]="call.date">
+        </ion-datetime>
+  </ion-item>
+  <ion-item>
+    <ion-segment [(ngModel)]="call.callType" color="primary">
+      <ion-segment-button value="visit">
+        First Time Visit
+      </ion-segment-button>
+      <ion-segment-button value="rv">
+        Return Visit
+      </ion-segment-button>
+      <ion-segment-button value="study">
+        Study
+      </ion-segment-button>
+    </ion-segment>
+  </ion-item>
+  <ion-item>
+    <ion-segment [(ngModel)]="call.priority" color="primary">
+      <ion-segment-button value="1">
+        1
+      </ion-segment-button>
+      <ion-segment-button value="2">
+        2
+      </ion-segment-button>
+      <ion-segment-button value="3">
+        3
+      </ion-segment-button>
+    </ion-segment>
+  </ion-item>
+ <ion-item>
+        <ion-label floating>Note</ion-label>
+        <ion-textarea 
+              [(ngModel)]="call.note" 
+              rows="3" 
+              playholder="Enter your notes here" ></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Visits</ion-label>
+  </ion-item>
+
+  <ion-list>
+    <ion-item-sliding *ngFor="let item of call.visits; let i = index;" >
+      <button ion-item (click)="viewVisit(item)" >      
+            <h2>{{item.date}}</h2>
+            <ion-note>
+              {{item.note }}
+            </ion-note>
+      </button> 
+      <ion-item-options>
+         <button ion-button color="danger" (click)="removeVisit(index)">
+            Remove
+         </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+
+
+  <ion-fab top right edge>
+      <button ion-fab color="primary" (click)="addVisit()" mini ><ion-icon name="add"></ion-icon></button>
+  </ion-fab>
+
+</ion-content>
