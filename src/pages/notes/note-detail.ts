@@ -3,10 +3,6 @@ import { NavController, NavParams, AlertController, ToastController } from 'ioni
 import _ from "lodash";
 import { Note } from '../../models';
 import { DataProvider } from '../../providers';
-import { generateId } from '../../utils';
-
-
-
 
 @Component({
   selector: 'page-note-detail',

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
-
+import { Ionic2RatingModule } from 'ionic2-rating';
 
 import { GetPages } from '../pages';
 import { GetProviders } from '../providers';
@@ -16,7 +16,8 @@ import { GetProviders } from '../providers';
 
   ],
   imports: [
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    Ionic2RatingModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [

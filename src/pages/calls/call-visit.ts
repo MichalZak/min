@@ -30,6 +30,8 @@ export class CallVisitPage {
 
   ionViewWillEnter() {
     this.call = Object.assign({}, this.navParams.get("call")); 
+    if(this.call.visits == null)
+      this.call.visits = new Array<Visit>();
     this.visit = Object.assign({}, this.navParams.get('visit'));
     if(this.visit.placements == null)
       this.visit.placements = new Array<Placement>();

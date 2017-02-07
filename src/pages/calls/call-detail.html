@@ -41,17 +41,7 @@
     </ion-segment>
   </ion-item>
   <ion-item>
-    <ion-segment [(ngModel)]="call.priority" color="primary">
-      <ion-segment-button value="1">
-        1
-      </ion-segment-button>
-      <ion-segment-button value="2">
-        2
-      </ion-segment-button>
-      <ion-segment-button value="3">
-        3
-      </ion-segment-button>
-    </ion-segment>
+    <rating [(ngModel)]="call.priority" ></rating>
   </ion-item>
  <ion-item>
         <ion-label floating>Note</ion-label>
@@ -62,24 +52,27 @@
   </ion-item>
 
   <ion-item>
-    <ion-label>Visits</ion-label>
+    Visits:
+    <ion-list>
+      <ion-item-sliding *ngFor="let item of call.visits; let i = index;" >
+        <button ion-item (click)="viewVisit(item)" >      
+              <ion-note>
+                {{item.note }}
+              </ion-note>
+               <p item-right align="right">
+                  {{item.date}}
+              </p>
+        </button> 
+        <ion-item-options>
+          <button ion-button color="danger" (click)="removeVisit(index)">
+              Remove
+          </button>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
   </ion-item>
 
-  <ion-list>
-    <ion-item-sliding *ngFor="let item of call.visits; let i = index;" >
-      <button ion-item (click)="viewVisit(item)" >      
-            <h2>{{item.date}}</h2>
-            <ion-note>
-              {{item.note }}
-            </ion-note>
-      </button> 
-      <ion-item-options>
-         <button ion-button color="danger" (click)="removeVisit(index)">
-            Remove
-         </button>
-      </ion-item-options>
-    </ion-item-sliding>
-  </ion-list>
+  
 
 
 

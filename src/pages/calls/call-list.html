@@ -22,7 +22,7 @@
             </ion-note>
             <p item-right align="right">
               {{item.date | date:'MMM dd' }}<br/>
-              <ion-badge item-right *ngIf="item.priority != null && item.priority > 0" >{{item.rating}}</ion-badge>
+              <ion-badge item-right *ngIf="item.priority != null" >{{item.priority}}</ion-badge>
             </p>
 
       </button> 
