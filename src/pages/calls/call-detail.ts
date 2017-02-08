@@ -34,9 +34,14 @@ export class CallDetailPage {
 
 
   ionViewWillEnter() {
-    this.oldCall =  Object.assign({}, this.dataProvider.getDoc(this.navParams.get("call")._id));
-    //get call from provider, make sure its the lates one 
-    this.call = Object.assign({}, this.dataProvider.getDoc(this.navParams.get("call")._id));
+    if(this.dataProvider.tempStore['call'] != null)
+      this.call = Object.assign({}, this.dataProvider.getDoc(this.navParams.get("call")._id));
+    else
+      this.call = Object.assign({}, this.navParams.get("call"));
+
+    this.oldCall = Object.assign({}, this.call);
+
+
     this.minDate = moment.utc().startOf('day').subtract(1,'y').format('YYYY-MM-DD');
     this.maxDate = moment.utc().add(2, 'y').format('YYYY-MM-DD');
 
@@ -53,6 +58,10 @@ export class CallDetailPage {
 
     this.dataProvider.save(this.call);
  }
+ setBackDate(){
+   console.log("setting up call back date");
+   this.call.date =  moment().format('YYYY-MM-DD');
+ }
 
  addVisit(){
     this.viewVisit(new Visit({
@@ -66,6 +75,7 @@ export class CallDetailPage {
  }
 
  viewVisit(visit:Visit){
+   this.dataProvider.tempStore['call'] = null;
    this.navCtrl.push(CallVisitPage,{visit:visit, call:this.call});
  }
 

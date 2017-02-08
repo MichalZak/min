@@ -53,6 +53,8 @@ export class CallVisitPage {
     this.call.visits = saveIntoArray(this.visit, this.call.visits, "id");
 
     this.dataProvider.save(this.call);
+    //lets notify parent that we have saved it
+    this.dataProvider.tempStore['call'] = true;
     console.log("Saved");
  }
 

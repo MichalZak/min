@@ -24,6 +24,8 @@ export class DataProvider {
     docs: Doc[]
   };
 
+  public tempStore:any = {}; //temporarly store data, when switching views
+
   private _syncOptions = {
       live: true,
       retry: true,
@@ -77,11 +79,16 @@ export class DataProvider {
 
   /* Get single doc by id */
   getDoc(id:string):Doc{
-    return this.dataStore.docs.find((doc)=>{
+    let d =  this.dataStore.docs.find((doc)=>{
       if(doc._id === id)
         return true;
       return false;
     })
+
+    if(d._id)
+      return d;
+    
+    return null;
   }
 
   getDocs(type:string){

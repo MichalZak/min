@@ -17,8 +17,9 @@
     <ion-input type="text" [(ngModel)]="call.address"></ion-input>
   </ion-item>
   <ion-item>
-        <ion-label>Come Back:</ion-label>
-        <ion-datetime
+        <ion-label *ngIf="!call.date" (click)="setBackDate()">Retrun date: click to setup return date</ion-label>
+        <ion-label *ngIf="call.date" (click)="setBackDate()">Return date:</ion-label>
+        <ion-datetime *ngIf="call.date"
           displayFormat="DDD(D) MMM YYYY" 
           pickerFormat="DDD(D) MMM YYYY" 
           [min]="minDate" 
@@ -26,6 +27,7 @@
           placeholder="Select Return Date"
           [(ngModel)]="call.date">
         </ion-datetime>
+        <button (click)="setBackDate()" ion-button full outline>Set Come back date</button>
   </ion-item>
   <ion-item>
     <ion-segment [(ngModel)]="call.callType" color="primary">
