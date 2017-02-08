@@ -42,7 +42,28 @@ export class CallListPage {
       docs =>{
         //onNext
         console.log(docs);
-        this.calls = docs
+        this.calls = docs.sort((a,b)=>{
+          //sort by priority->date->name
+          if(a.priority < b.priority)
+            return 1;
+
+          if(a.priority > b.priority)
+            return -1;
+
+          if(a.date < b.date)
+            return -1;
+
+          if(a.date > b.date)
+            return 1;
+
+          if(a.name < b.name)
+            return -1;
+
+          if(a.name > b.name)
+            return 1;
+
+          return 0;
+        });
         //this.ref.detectChanges();
         this.ref.markForCheck();
       },
