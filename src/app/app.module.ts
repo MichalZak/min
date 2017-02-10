@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
 import { Ionic2RatingModule } from 'ionic2-rating';
+import { ElasticModule  }       from 'angular2-elastic';
 
 import { GetPages } from '../pages';
 import { GetProviders } from '../providers';
@@ -18,6 +19,7 @@ import { GetProviders } from '../providers';
   imports: [
     IonicModule.forRoot(MyApp),
     Ionic2RatingModule,
+    ElasticModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [

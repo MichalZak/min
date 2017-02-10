@@ -34,8 +34,12 @@ export class CallDetailPage {
 
 
   ionViewWillEnter() {
+    console.log("****Ionview Will Enter");
     if(this.dataProvider.tempStore['call'] != null)
-      this.call = Object.assign({}, this.dataProvider.getDoc(this.navParams.get("call")._id));
+    {
+      this.call = Object.assign({}, this.dataProvider.tempStore['call']);
+      this.dataProvider.tempStore['call'] = null;
+    }
     else
       this.call = Object.assign({}, this.navParams.get("call"));
 

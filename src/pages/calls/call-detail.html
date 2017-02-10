@@ -48,6 +48,7 @@
  <ion-item>
         <ion-label floating>Note</ion-label>
         <ion-textarea 
+              fz-elastic
               [(ngModel)]="call.note" 
               rows="3" 
               playholder="Enter your notes here" ></ion-textarea>
@@ -57,9 +58,10 @@
     Visits:
     <ion-list>
       <ion-item-sliding *ngFor="let item of call.visits; let i = index;" >
-        <button ion-item (click)="viewVisit(item)" >      
+        <button ion-item (click)="viewVisit(item)" >     
+              <h2 *ngFor="let placement of item.placements" >{{placement.type}}::{{placement.name}}</h2> 
               <ion-note>
-                {{item.note }}
+                {{item.note}}                
               </ion-note>
                <p item-right align="right">
                   {{item.date}}
@@ -78,8 +80,8 @@
 
 
 
-  <ion-fab top right edge>
-      <button ion-fab color="primary" (click)="addVisit()" mini ><ion-icon name="add"></ion-icon></button>
+  <ion-fab top right >
+      <button ion-fab color="primary" (click)="addVisit()"  ><ion-icon name="add"></ion-icon></button>
   </ion-fab>
 
 </ion-content>

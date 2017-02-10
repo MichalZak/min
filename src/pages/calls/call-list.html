@@ -22,6 +22,7 @@
             </ion-note>
             <p item-right align="right">
               {{item.date | date:'MMM dd' }}<br/>
+              <ion-icon *ngIf="item.callType == 'study'" name="md-book"></ion-icon>
               <ion-badge item-right *ngIf="item.priority != null" >{{item.priority}}</ion-badge>
             </p>
 
