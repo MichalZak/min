@@ -8,7 +8,7 @@ import { Storage } from '@ionic/storage';
 export class Settings {
 
 
-  private SETTINGS_KEY: string = '_setting2';
+  private SETTINGS_KEY: string = '_setting_min';
 
   settings: any;
 

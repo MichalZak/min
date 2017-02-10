@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-
+import { WelcomePage } from '../';
 /*
   Generated class for the About page.
 
@@ -17,6 +17,10 @@ export class AboutPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AboutPage');
+  }
+
+  loginSignup(){
+    this.navCtrl.push(WelcomePage);
   }
 
 }

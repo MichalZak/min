@@ -5,8 +5,8 @@ export function getConfig(){
 
  //remote  
     return {
-       WebUrl: "https://db.mzlabs.net",
-       database_name: "minnotes"
+       WebUrl: "http://localhost:3010",
+       //database_name: "minnotes"
     }
 }
 

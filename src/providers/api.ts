@@ -14,12 +14,6 @@ export class Api {
   constructor(public http: Http, public settings: Settings,) {
   }
 
-  pushMessage(school:number, token:string, platform:string, message:string){
-    console.log('https://push.getrecdapp.com/api/send/testnotification.php?schoolid='+school+'&notification='+message+'&notificationid=1&devicetoken='+token+'&appplatform='+platform+'&dev=0');
-  
-    return this.http.get('https://push.getrecdapp.com/api/send/testnotification.php?schoolid='+school+'&notification='+message+'&notificationid=1&devicetoken='+token+'&appplatform='+platform+'&dev=0');
-  
-  }
 
   get(endpoint: string, url?:string, params?: any, options?: RequestOptions) {
     if(url == null)
@@ -48,6 +42,7 @@ export class Api {
     console.log('api-> Post: '+ url + '/' + endpoint);
     console.log('body: '+JSON.stringify(body));
     console.log('options: '+JSON.stringify(options));
+
     return this.http.post(url +'/'+ endpoint, body, options);
   }
 

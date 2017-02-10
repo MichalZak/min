@@ -41,7 +41,7 @@ export class Auth {
    * the user entered on the form.
    */
   login(accountInfo: any) {
-    let seq = this.api.post('auth/login', accountInfo).share();
+    let seq = this.api.post('_auth', accountInfo).share();
 
     seq
       .map(res => res.json())
@@ -62,7 +62,7 @@ export class Auth {
    * the user entered on the form.
    */
   signup(accountInfo: AccountInfo) {
-    let seq = this.api.post('auth/register', accountInfo).share();
+    let seq = this.api.post('_adduser', accountInfo).share();
 
     seq
       .map(res => res.json())

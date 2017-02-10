@@ -29,6 +29,7 @@ export class Call extends Doc {
     note?: string;
     date?: string;
     priority?: number;
+    sticky?: boolean; //use bonfire to stick on top
     callType?: string;
     visits?: Visit[];
 
