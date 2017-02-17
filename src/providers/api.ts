@@ -15,8 +15,8 @@ export class Api {
   }
 
 
-  get(endpoint: string, url?:string, params?: any, options?: RequestOptions) {
-    if(url == null)
+  get(endpoint: string, params?: any,  url?:string, options?: RequestOptions) {
+    if(!url)
       url = this.settings.getValue('WebUrl');
 
     if (!options) {
@@ -34,7 +34,11 @@ export class Api {
       options.search = !options.search && p || options.search;
     }
 
-    return this.http.get(this.url + '/' + endpoint, options);
+    console.log('URL', url);
+    console.log("URL: "+url+"/"+ endpoint);
+    console.log("OPTIONS", options);
+
+    return this.http.get(url + '/' + endpoint, options);
   }
 
   post(endpoint: string, body: any, options?: RequestOptions) {

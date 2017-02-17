@@ -64,6 +64,10 @@ export class Settings {
     return this.settings[key];
   }
 
+  getAll(){
+    return this.settings;
+  }
+
   save() {
     return this.setAll(this.settings);
   }

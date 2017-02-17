@@ -1,26 +1,42 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, Events } from 'ionic-angular';
 import { WelcomePage } from '../';
-/*
-  Generated class for the About page.
+import { Auth } from '../../providers';
 
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
-*/
 @Component({
   selector: 'page-about',
   templateUrl: 'about.html'
 })
 export class AboutPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {}
+  username:string = "";
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, public auth: Auth, public events:Events) {}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AboutPage');
   }
 
+  ionViewWillEnter() {
+    if(this.auth.user != null && this.auth.user.username != null)
+      this.username = this.auth.user.username
+    else
+      this.username = "Guest";
+  }
+
+
   loginSignup(){
     this.navCtrl.push(WelcomePage);
   }
+
+  logout(){
+    this.auth.logout();
+    this.username = "Guest";
+  }
+
+  checkCodePush(){
+    this.events.publish('CODEPUSH_CHECK');
+  }
+
 
 }

@@ -18,23 +18,23 @@ export class Placements {
 
   getBooks():Placement[]{
     return [
-      {name: 'What Does the Bible Really Teach?', shortName: 'bh', type:"book"}, 
-      {name: 'NWT Bible', shortName: 'nwt', type:"book"}, 
+      new Placement({_id: 'pub/book/bh', name: 'Bible Teach', fullName: 'What Does the Bible Really Teach?', shortName: 'bh', type:"book", category: "study"}), 
+      new Placement({_id: 'pub/book/nwt', name: 'NWT Bible', shortName: 'nwt', type:"book", category: "study"}), 
 
-      {name: 'Was Life Created?', shortName: 'lc', type:"book"},
-      {name: 'The Origin of Life—Five Questions Worth Asking', shortName: 'lf', type:"book"}, 
-      {name: 'Your Family Can Be Happy', shortName: 'hf', type:"book"}, 
-      {name: 'What Can the Bible Teach Us?', shortName: 'bhs', type:"book"}, 
-      {name: 'Lasting Peace and Happiness', shortName: 'pc', type:"book"}, 
-      {name: 'Good News From God!', shortName: 'fb', type:"book"}, 
-      {name: 'Who Are Doing Jehovah’s Will Today?', shortName: 'jl', type:"book"}, 
-      {name: 'Questions Young People Ask 1', shortName: 'yp1', type:"book"}, 
-      {name: 'Questions Young People Ask 2', shortName: 'yp2', type:"book"}, 
-      {name: 'Listen to God and Live Forever', shortName: 'll', type:"book"}, 
-      {name: 'Learn From the Great Teacher', shortName: 'lr', type:"book"}, 
-      {name: 'Keep Yourselves in God’s Love', shortName: 'lv', type:"book"}, 
-      {name: 'Draw Close to Jehovah', shortName: 'cl', type:"book"}, 
-      {name: 'My Book of Bible Stories', shortName: 'my', type:"book"}, 
+      new Placement({_id: 'pub/book/lc', name: 'Was Life Created?', shortName: 'lc', type:"book"}),
+      new Placement({_id: 'pub/book/lf', name: 'The Origin of Life—Five Questions Worth Asking', shortName: 'lf', type:"book"}), 
+      new Placement({_id: 'pub/book/hf', name: 'Your Family Can Be Happy', shortName: 'hf', type:"book"}), 
+      new Placement({_id: 'pub/book/bhs', name: 'Teach Us?', shortName: 'bhs', type:"book", category: "study"}), 
+      new Placement({_id: 'pub/book/pc', name: 'Peace&Happiness', shortName: 'pc', type:"book", category: "study"}), 
+      new Placement({_id: 'pub/book/fb', name: 'Good News From God!', shortName: 'fb', type:"book"}), 
+      new Placement({_id: 'pub/book/jl', name: 'Jehovah’s Will?', shortName: 'jl', type:"book", category: "study"}), 
+      new Placement({_id: 'pub/book/yp1', name: 'Questions Young People Ask 1', shortName: 'yp1', type:"book"}), 
+      new Placement({_id: 'pub/book/yp2', name: 'Questions Young People Ask 2', shortName: 'yp2', type:"book"}), 
+      new Placement({_id: 'pub/book/ll', name: 'Listen to God and Live Forever', shortName: 'll', type:"book"}), 
+      new Placement({_id: 'pub/book/lr', name: 'Learn From the Great Teacher', shortName: 'lr', type:"book"}), 
+      new Placement({_id: 'pub/book/lv', name: 'God’s Love', shortName: 'lv', type:"book", category: "study"}), 
+      new Placement({_id: 'pub/book/cl', name: 'Draw Close to Jehovah', shortName: 'cl', type:"book"}), 
+      new Placement({_id: 'pub/book/my', name: 'My Book of Bible Stories', shortName: 'my', type:"book"}), 
     ];
   }
 
@@ -44,15 +44,15 @@ export class Placements {
 
   getVideos():Placement[]{
    return [
-      {name: 'Why Study the Bible?', type:"video"},
-      {name: 'Who Is the Author of the Bible?', type:"video"},
-      {name: 'How Can We Be Sure the Bible Is True?', type:"video"},
-      {name: 'What Happens at a Kingdom Hall?', type:"video"},
-      {name: 'Was Life Created? Introduction', type:"video"},
-      {name: 'Does God Have a Name?', type:"video"},
-      {name: 'Why Did Jesus Die?', type:"video"},
-      {name: 'Strength Comes From Serving Jehovah', type:"video"}, 
-      {name: 'I Got Fed Up With My Lifestyle', type:"video"},
+      new Placement({_id: 'pub/video/', name: 'Why Study the Bible?', type:"video"}),
+      new Placement({_id: 'pub/video/', name: 'Who Is the Author of the Bible?', type:"video"}),
+      new Placement({_id: 'pub/video/',name: 'How Can We Be Sure the Bible Is True?', type:"video"}),
+      new Placement({_id: 'pub/video/',name: 'What Happens at a Kingdom Hall?', type:"video"}),
+      new Placement({_id: 'pub/video/',name: 'Was Life Created? Introduction', type:"video"}),
+      new Placement({_id: 'pub/video/',name: 'Does God Have a Name?', type:"video"}),
+      new Placement({_id: 'pub/video/',name: 'Why Did Jesus Die?', type:"video"}),
+      new Placement({_id: 'pub/video/',name: 'Strength Comes From Serving Jehovah', type:"video"}), 
+      new Placement({_id: 'pub/video/', name: 'I Got Fed Up With My Lifestyle', type:"video"}),
     ]
   }
 

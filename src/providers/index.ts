@@ -17,6 +17,7 @@ export {
   DataProvider,
   Settings,
   Placements,
+  
 
 }
 

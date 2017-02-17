@@ -4,6 +4,8 @@ import { Events } from 'ionic-angular';
 import { User } from '../models';
 import { Api } from './api';
 import { Settings } from './settings';
+import { RequestOptions, Headers} from '@angular/http';
+import { Base64 } from '../base64';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/share';
@@ -11,11 +13,11 @@ import 'rxjs/add/operator/share';
 
 
 export interface AccountInfo{
-  name?:string; 
+  //name?:string; 
   username?:string;
-  email?:string;
+  //email?:string;
   password?: string;
-  confirmPassword?:string;
+  ///confirmPassword?:string;
 }
 
 
@@ -28,6 +30,7 @@ export class Auth {
   static AUTH_SETTING_KEY:string = "AUTH";
 
   private _user: User;
+  private _headers:Headers;
 
   constructor(public settings: Settings, 
               public events: Events,
@@ -41,14 +44,23 @@ export class Auth {
    * the user entered on the form.
    */
   login(accountInfo: any) {
-    let seq = this.api.post('_auth', accountInfo).share();
+
+    let base:Base64 = new Base64();
+    let auth =  "Basic "+ base.encode(accountInfo.username+":"+accountInfo.password);
+    let headers:Headers = new Headers({Authorization:auth});
+    let options:RequestOptions = new RequestOptions();
+    options.headers = headers;
+    options.withCredentials = true;
+
+    let seq = this.api.get('_auth', null, null, options).share();
 
     seq
       .map(res => res.json())
       .subscribe(res => {
         // If the API returned a successful response, mark the user as logged in
         console.log("Auth Login: "+JSON.stringify(res));
-        this._loggedIn(res);
+        this._headers = headers;
+        this.loadUser(accountInfo);
       }, err => {
         console.log('Singin ERROR: '+JSON.stringify(err));
         //need to  show that its an error
@@ -56,6 +68,7 @@ export class Auth {
 
     return seq;
   }
+
 
   /**
    * Send a POST request to our signup endpoint with the data
@@ -69,7 +82,8 @@ export class Auth {
       .subscribe(res => {
         // If the API returned a successful response, mark the user as logged in
         console.log("Auth-> singup->result: "+JSON.stringify(res));
-        this._loggedIn(res);
+
+        this.loadUser(accountInfo);
 
       }, err => {
         console.log('Singup ERROR: '+JSON.stringify(err));
@@ -85,22 +99,19 @@ export class Auth {
     this._user = null;
     this.settings.setValue(Auth.AUTH_SETTING_KEY, {});
     this.events.publish(Auth.AUTH_LOGOUT);
-    //nav.setRoot(WelcomePage);
+    this.api.get("_logout");
   }
 
   /**
    * Process a login/signup response to store user data
    */
-  _loggedIn(res) {
-    console.log("Auth _loggedIN: "+JSON.stringify(res));
-
+   loadUser(accountInfo: AccountInfo) {
+    let base:Base64 = new Base64();
+    let auth =  "Basic "+ base.encode(accountInfo.username+":"+accountInfo.password);
     this._user = new User({
-      token: res.token,
-      password: res.password,
-      username: res.user_id,
-      dbs: res.userDBs,
-      token_issued: res.issued,
-      token_expires: res.expires
+      username: accountInfo.username,
+      password: accountInfo.password,
+      header: auth
     });
 
     this.settings.setValue(Auth.AUTH_SETTING_KEY,this._user);
@@ -111,28 +122,7 @@ export class Auth {
    * See if user is logged in
    */
   loggedIn():boolean{
-    //lets see if we have user credentials stored
-    let user:User = new User(this.settings.getValue(Auth.AUTH_SETTING_KEY));
-    
-    if(user.token_expires)
-      if(Date.now() > user.token_expires )
-        return false;//token expired
-
-    if(user.token_expires)  
-      console.log("Token Life: "+ new Date(user.token_expires).toDateString());
-
-    console.log("Checking loggedIn Stored User: " + JSON.stringify(user));
-
-
-    if(user == null)
-      return false;
-    
-    if(user.username == null || user.username == "")
-      return false;
-
-    this._user = user;
-    
-    return true;
+    return (this._user != null && this._user.username != null && this._user.username != "" && this._user.username != "guest")
   }
   
   get user(){

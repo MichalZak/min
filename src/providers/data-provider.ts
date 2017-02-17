@@ -18,19 +18,25 @@ import 'rxjs/add/operator/first';
 export class DataProvider {
 
   private _pouch:any;
-  private _pouchRemove:any;
+  private _pouchRemote:any;
   private _docs: BehaviorSubject<Doc[]>;
+  private _selectedDoc: BehaviorSubject<Doc>;
   private dataStore: {
-    docs: Doc[]
+    docs: Doc[],
+    selectedDoc: Doc
   };
 
   public tempStore:any = {}; //temporarly store data, when switching views
 
   private _syncOptions = {
-      live: true,
-      retry: true,
-      continuous: true
+      live: false,
+      retry: false,
     };
+
+  private _localPouchOptions = {
+    revs_limit: 10,
+    auto_compaction: true
+  } 
 
   constructor(private platform: Platform,
               private events: Events,
@@ -38,7 +44,7 @@ export class DataProvider {
               private auth:Auth) {
     console.log('Hello DataProvider');
 
-    this.dataStore = {docs:[]};
+    this.dataStore = {docs:[], selectedDoc: new Doc()};
     this._docs = <BehaviorSubject<Doc[]>>new BehaviorSubject([]);
     
 
@@ -53,11 +59,9 @@ export class DataProvider {
     //see if we where authenticated before DataProvider was created
     if(this.auth.loggedIn())
     {
-      let dbname:string  = this.settings.getValue('database_name');
-      console.log("Got DBname: ", dbname);
-      console.log(this.auth.user.dbs);
+      console.log("USER", this.auth.user);
       //lets init databases
-      this.initPouch(this.auth.user.username, this.auth.user.dbs[dbname]); 
+      this.initPouch(this.auth.user.username, true); 
     }
     else{
       this.initPouch("guest"); 
@@ -67,13 +71,13 @@ export class DataProvider {
     this.events.subscribe(Auth.AUTH_LOGIN, ()=>{
           console.log("DataProvider Event Login");
           console.log("Auth Username: "+this.auth.user.username);
-          console.log("User DBS: "+ this.auth.user.dbs)
-          this.initPouch(this.auth.user.username, this.auth.user.dbs[this.settings.getValue('database_name')]);    
+          this.initPouch(this.auth.user.username, true);    
     });
 
     this.events.subscribe(Auth.AUTH_LOGOUT, ()=>{
       console.log('DataProvider Event Logout');
       this.disconectRemote();
+      this.initPouch("guest"); 
     });
   }
 
@@ -95,6 +99,16 @@ export class DataProvider {
     return  this.dataStore.docs.filter((doc)=> doc.type === type)
   }
 
+  getAllDocs(){
+    return this.dataStore.docs;
+  }
+
+  getDocObservable(id:string):Observable<any> {
+    return this._docs.asObservable().map(doc => {
+      return doc.find(doc => doc._id === id);
+    })
+  }
+
   getDocsObservable(type:string):Observable<any> {
     if(type == null)
       return this._docs.asObservable();
@@ -109,20 +123,17 @@ export class DataProvider {
 
 
   save(doc:Doc): Promise<any>{
-    //debugger;
-    console.log('DataProvider->save doc: '+JSON.stringify(doc));
-    //lets make sure we have an ID, if its new doc, lets generate new ID
-    if(doc._id == null)
-    {
-      if(doc.type == null)
-        doc.type = ""; //make doc be default
-      doc._id = generateId(doc.type);
-    }
-       
-    return this._pouch.put(doc)
-      .catch(err=>{
-        console.log('Datarovider Save Error:'+JSON.stringify(err));
-      }); 
+    return new Promise((resolve,reject) =>{
+      console.log('DataProvider->save doc: '+JSON.stringify(doc));
+      this._pouch.put(doc)
+        .then((res)=>{
+          resolve(res);
+        })
+        .catch(err=>{
+          console.log('Datarovider Save Error:'+JSON.stringify(err));
+          reject(err);
+        }); 
+      })
   }
 
   remove(doc:Doc): Promise<Doc>{
@@ -194,10 +205,10 @@ export class DataProvider {
 
 
 
-  private initPouch(pouchName:string, remotedb:string=""):Promise<any> {
+  private initPouch(pouchName:string, connectRemote:boolean=false):Promise<any> {
     console.log('DataProvider->initDB localName: '+JSON.stringify(pouchName));
     return this.platform.ready().then(()=>{
-      this._pouch = new PouchDB(pouchName);
+      this._pouch = new PouchDB(pouchName, this._localPouchOptions);
       window['PouchDB'] = PouchDB;//make it visible for chrome extension
 
       //lets load all the data and then listen to all the changes
@@ -225,8 +236,8 @@ export class DataProvider {
          })
 
          //connect to remote 
-         if(remotedb != "")
-          this.initRemotePouch(remotedb);
+         if(connectRemote)
+          this.initRemotePouch();
 
         
     });//end of platform ready
@@ -234,11 +245,17 @@ export class DataProvider {
 
 
   
-  private initRemotePouch(remotedb:string){
-    console.log("DataProvider init Remote url: "+JSON.stringify(remotedb));    
-    this._pouchRemove = new PouchDB(remotedb);
+  private initRemotePouch(){
+    let db = this.settings.getValue("database_name");
 
-    this._pouch.sync(this._pouchRemove, this._syncOptions)
+    this._pouchRemote = new PouchDB("https://"+this.auth.user.username+":"+this.auth.user.password+"@"+db, {
+      /*auth:{
+        username: this.auth.user.username,
+        password: this.auth.user.password
+      }*/
+    });
+
+    this._pouch.sync(this._pouchRemote, this._syncOptions)
         .on('change', function (info) {
           // handle change
           console.log('DataProvider Pouch Sync OnChange:'+JSON.stringify(info));
@@ -267,7 +284,7 @@ export class DataProvider {
 
   private disconectRemote(){
     //TODO: there needs to be a better way to stop sync
-    this._pouchRemove = null;
+    this._pouchRemote = null;
   }
 
 

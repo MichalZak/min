@@ -12,15 +12,15 @@
     <ion-list>
 
       <ion-item>
-        <ion-label fixed>Name</ion-label>
+        <ion-label fixed>Username</ion-label>
         <ion-input type="text" (blur)="checkUnique('username')" [(ngModel)]="account.username" name="name"></ion-input>
       </ion-item>
-
+<!--
       <ion-item>
         <ion-label fixed>Email</ion-label>
         <ion-input type="email" [(ngModel)]="account.email" name="email"></ion-input>
       </ion-item>
-
+-->
       <!--
       Want to add a Username? Here you go:
 
@@ -34,12 +34,12 @@
         <ion-label fixed>Password</ion-label>
         <ion-input type="password" [(ngModel)]="account.password" name="password"></ion-input>
       </ion-item>
-
+<!--
       <ion-item>
         <ion-label fixed>Confirm Password</ion-label>
         <ion-input type="password" [(ngModel)]="account.confirmPassword" name="password"></ion-input>
       </ion-item>
-
+-->
       <div padding>
         <button ion-button color="primary" block>Signup</button>
       </div>

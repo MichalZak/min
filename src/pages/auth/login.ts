@@ -26,13 +26,14 @@ export class LoginPage {
     this.auth.login(this.account).subscribe((res) => {
       console.log("LoginPage doLogin RES: " + JSON.stringify(res));
       //this.navCtrl.push(TabsPage);
+      this.navCtrl.popToRoot();
     }, (err) => {
       console.log('Login -> doLogin ERROR: '+JSON.stringify(err));
       //this.navCtrl.push(MainPage); // TODO: Remove this when you add your signup endpoint
 
       
       console.log("validationErrors: "+JSON.stringify(err._body));
-      let message:string = "Unable to login in, please try again at later time.";
+      let message:string = "Unable to login in, please check your username/password";
         
       try{
         let body = JSON.parse(err['_body']);

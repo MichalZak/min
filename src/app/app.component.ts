@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { App, Events, Platform } from 'ionic-angular';
+import { App, Events, Platform, AlertController } from 'ionic-angular';
 import { StatusBar, Splashscreen, CodePush } from 'ionic-native';
 
 //prividers
@@ -21,6 +21,7 @@ export class MyApp {
   constructor(app: App,
               platform: Platform,
               settings: Settings,
+              public alertCtrl: AlertController,
               auth: Auth, 
               events: Events) {
 
@@ -31,10 +32,16 @@ export class MyApp {
         //check if we are logged in, prevent race condition
         settings.load().then(res=>{
           //console.log("AppComponent -> Settings-> Load: "+JSON.stringify(res));
-          //if(auth.loggedIn())
-          //  events.publish(Auth.AUTH_LOGIN);
-          //else
-          //  this.rootPage = WelcomePage;
+          console.log("App Component Load");
+          console.log("AUTH USER: "+ auth.loggedIn() + ":: ", auth.user);
+          console.log("SETTINGS: ", settings.getAll());
+
+          if(settings.getValue(Auth.AUTH_SETTING_KEY) != null)
+            auth.loadUser(settings.getValue(Auth.AUTH_SETTING_KEY));
+
+          if(auth.loggedIn())
+            events.publish(Auth.AUTH_LOGIN);
+          
           this.rootPage = TabsPage;
 
         }).catch(err=>{
@@ -55,6 +62,53 @@ export class MyApp {
           //app.getRootNav().setRoot(TabsPage);
           
         });
+
+        events.subscribe('CODEPUSH_CHECK', ()=>{
+          try{
+
+            CodePush.checkForUpdate().then(update=> {
+            let message = "";
+            if (!update) {
+                message = "The app is up to date.";
+                console.log("The app is up to date.");
+            } else {
+                message = "An update is available! Should we download it?";
+                console.log("An update is available! Should we download it?");
+                CodePush.sync();
+            }
+
+            let prompt = this.alertCtrl.create({
+            title: 'Remove Call',
+            message: message,
+              buttons: [
+                {
+                  text: 'OK',
+                  handler: data=>{}//do nothing, just leave
+                }
+              ]
+            });
+            prompt.present();
+          });
+
+
+        } catch(err){
+          let prompt = this.alertCtrl.create({
+            title: 'Remove Call',
+            message: err,
+              buttons: [
+                {
+                  text: 'OK',
+                  handler: data=>{}//do nothing, just leave
+                }
+              ]
+            });
+            prompt.present();
+        }
+
+
+
+        });//end of event subscribe
+        
 
 
         // Okay, so the platform is ready and our plugins are available.

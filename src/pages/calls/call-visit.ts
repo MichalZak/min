@@ -45,18 +45,16 @@ export class CallVisitPage {
   }
 
   save(){
-    console.log("About to save");
+    console.log("ARE WE SAVING VISIT: ");
     //lets see if changes where made
     if(_.isEqual(this.visit, this.navParams.get("visit")))
       return; //no changes have been make, no need to save
     
+    console.log("VISIT YES WE ARE");
     this.call.visits = saveIntoArray(this.visit, this.call.visits, "id");
-
-    //this.dataProvider.save(this.call);
-    console.log("Call-Visit -> saved call");
-    //lets notify parent that we have saved it
-    this.dataProvider.tempStore['call'] = this.call;
-    console.log("Saved");
+    console.log("** New Visit Array: ", this.call.visits);
+    this.dataProvider.save(this.call);
+    //this.dataProvider.tempStore['call'] = this.call;
  }
 
 

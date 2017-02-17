@@ -29,6 +29,13 @@
   <p>
     todo:point to website.
   </p>
-  <button ion-button full (click)="loginSignup()" >Signup/Login</button>
+  <hr />
+  Username: {{username}}
+  <br/>
+    <button *ngIf="username != 'Guest'" ion-button full (click)="logout()" >Logout</button>
+    <button *ngIf="username == 'Guest'" ion-button full (click)="loginSignup()" >Signup/Login</button>
+
+  <br/>
+    <button  ion-button full (click)="checkCodePush()" >Check for Updates</button>
 
 </ion-content>

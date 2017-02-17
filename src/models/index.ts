@@ -6,6 +6,9 @@ export class Doc {
     public _deleted?:boolean;
     public type?:string; //this is to distinguish different doc types
 
+    constructor(values: Object = {}) {
+        Object.assign(this, values);
+    }
 
 }
 
@@ -40,10 +43,21 @@ export class Call extends Doc {
     
 }
 
-export interface Placement{
+export class Placement extends Doc {
     name:string;
     type:string;
     shortName?:string;
+    category?:string;
+    fav?:boolean;
+    image?:string;
+
+    getImage(){
+        if(!this.image)
+            return "assets/img/publications/default_E_md.jpg"
+        return "assets/img/publications/"+this.image;
+    }
+
+    
 }
 
 export class Visit {
@@ -78,21 +92,9 @@ export class Settings extends Doc {
 export class User extends Doc {
     public username?: string;
     public password?: string;
-    public token?:string;
-    public dbs:Array<string>;
-    public email?: string;
 
-    public token_issued?:number;
-    public token_expires?:number;
-
-    constructor(private fields: any) {
+    constructor(values: Object = {}) {
         super();
-        // Quick and dirty extend/assign fields to this model
-        for(let f in fields) {
-            this[f] = fields[f];
-        }
-
-        if(this['fields'] != null)
-            delete this['fields'];
+        Object.assign(this, values);
     }
 }

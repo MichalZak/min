@@ -4,6 +4,8 @@ import { MyApp } from './app.component';
 import { Ionic2RatingModule } from 'ionic2-rating';
 import { ElasticModule  }       from 'angular2-elastic';
 
+
+
 import { GetPages } from '../pages';
 import { GetProviders } from '../providers';
 
@@ -20,6 +22,8 @@ import { GetProviders } from '../providers';
     IonicModule.forRoot(MyApp),
     Ionic2RatingModule,
     ElasticModule,
+    
+
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -27,6 +31,6 @@ import { GetProviders } from '../providers';
     GetPages(),
 
   ],
- providers: GetProviders(), 
+ providers: GetProviders(),  
 })
 export class AppModule {}

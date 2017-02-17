@@ -82,15 +82,23 @@ export class CallListPage {
     this.subscription.dispose();
   }
 
-  view(item:any){
-    this.navCtrl.push(CallDetailPage,{call:item});
+  view(id:string){
+    this.navCtrl.push(CallDetailPage,{call:id});
   }
 
   add(){
-    this.view(new Call({
-      _id: generateId("call"),
+
+    let c = new Call({_id: generateId("call"),
       type: "call"
-    }));
+    });
+
+    this.dataProvider.save(c)
+    .then(res=>{
+      this.view(res.id);
+    })
+    .catch(err=>{
+      console.log("ERROR CREATING CALL", err);
+    });  
   }
 
   remove(item:any){
