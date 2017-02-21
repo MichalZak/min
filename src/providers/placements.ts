@@ -1,22 +1,178 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import 'rxjs/add/operator/map';
+import { Platform } from 'ionic-angular'; 
 import {Placement } from '../models';
+import { Settings } from './settings';
+import PouchDB from 'pouchdb';
+import { Doc } from '../models';
+import 'rxjs/add/operator/map';
 
-/*
-  Generated class for the Placements provider.
 
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular 2 DI.
-*/
 @Injectable()
 export class Placements {
 
-  constructor(public http: Http) {
+  private _pouch:any;
+  private _pouchRemote:any;
+  private _docs:Array<Placement>;
+
+  private _localPouchOptions = {
+    revs_limit: 10,
+    auto_compaction: true
+  } 
+
+
+  constructor(private platform: Platform,
+              public settings: Settings) {
     console.log('Hello Placements Provider');
   }
 
-  getBooks():Placement[]{
+
+  getDocs(){
+    return this._docs;
+  }
+
+  //Call this when loading app
+  public syncData(){
+    this.initPouch("min_publications", true);
+  }
+
+
+
+  private initPouch(pouchName:string, connectRemote:boolean=false):Promise<any> {
+    console.log('DataProvider->initDB localName: '+JSON.stringify(pouchName));
+    return this.platform.ready().then(()=>{
+      this._pouch = new PouchDB(pouchName, this._localPouchOptions);
+      window['PouchDB'] = PouchDB;//make it visible for chrome extension
+
+      //lets load all the data and then listen to all the changes
+      //lets init db, and load all the docs
+      this._pouch.allDocs({include_docs: true})
+        .then(doc => {
+          console.log("Init Docs: "+JSON.stringify(doc));
+          //this.loadAllDocs(doc.rows);
+          let state:Placement[] = doc.rows.map(row => new Placement(row.doc));
+          this.loadAllDocs(state);
+
+        });
+
+      
+      //now watch for changes
+      this._pouch.changes({live: true, since: 'now', include_docs:true})
+        .on('change', change => {
+           console.log('Changes obj:'+JSON.stringify(change));
+           if (change['deleted']) {
+                this.removeSuccessful(change.doc);
+            } 
+            else {
+              console.log('PouchChange:'+JSON.stringify(change));
+              this.saveSuccessful(change.doc); 
+            }
+         })
+
+      //connect to remote 
+      if(connectRemote)
+          this.initRemotePouch();
+
+        
+    });//end of platform ready
+  }
+
+  
+  private initRemotePouch(){
+    let db = this.settings.getValue("database_publications");
+
+    this._pouchRemote = new PouchDB(db);
+
+    this._pouch.replicate.from(this._pouchRemote, {
+      filter: 'myFilters/languageFilter',
+      query_params: {
+        languages: ['E', 'CHS' ]
+      },
+      live: false,
+      retry: false,})
+        .on('change', function (info) {
+          // handle change
+          console.log('DataProvider Pouch Sync OnChange:', info);
+        }).on('paused', function (err) {
+          // replication paused (e.g. replication up to date, user went offline)
+          console.log('DataProvider Pouch Sync OnPaused:', err);
+        }).on('active', function () {
+          // replicate resumed (e.g. new changes replicating, user went back online)
+          console.log('DataProvider Pouch Sync OnActive');
+        }).on('denied', function (err) {
+          // a document failed to replicate (e.g. due to permissions)
+          console.log('DataProvider Pouch Sync OnDenied:', err);
+        }).on('complete', function (info) {
+          // handle complete
+          console.log('DataProvider Pouch Sync OnComplete:', info);
+        }).on('error', function (err) {
+          // handle error
+          console.log('DataProvider Pouch Sync OnErr:', err);
+        });
+
+  }
+
+  private loadAllDocs(docs:Placement[]){
+    this._docs = docs;
+  }
+
+    private removeSuccessful(doc:any){
+    //console.log('DocReducer->REMOVE_SUCCESS: '+JSON.stringify(doc));
+    this._docs = this._docs.filter(d=>d._id !== doc._id);
+
+  }
+
+  private saveSuccessful(doc:any){
+    //we have changes being made to pub database
+    console.log("*****CHANGES BEING MADE", doc);
+    this._docs = this.saveIntoArray(doc, this._docs);
+    //need to load image file
+    //TODO: check if the image exists, if not upload it
+  }
+
+
+  saveIntoArray(item:Object, ary:Array<any>, idKey:string='_id'):Array<any>{
+  var i = this.getIndexById(item[idKey],ary,idKey);
+      if(i== -1)
+        i=ary.length;
+      return [  ...ary.slice(0, i),
+                new Placement(Object.assign({},item)),
+                ...ary.slice(i + 1) ]
+  }
+  getIndexById(id:string, ary:any, idKey:string = '_id'):number{
+   for(var i = 0; i < ary.length; i++){
+        if(id === ary[i][idKey])
+          return i;
+      }
+
+      //if we don't have a match return null
+      return -1;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  getBooks2():Placement[]{
     return [
       new Placement({_id: 'pub/book/bh', name: 'Bible Teach', fullName: 'What Does the Bible Really Teach?', shortName: 'bh', type:"book", category: "study"}), 
       new Placement({_id: 'pub/book/nwt', name: 'NWT Bible', shortName: 'nwt', type:"book", category: "study"}), 
@@ -42,7 +198,7 @@ export class Placements {
     
   }
 
-  getVideos():Placement[]{
+  getVideos2():Placement[]{
    return [
       new Placement({_id: 'pub/video/', name: 'Why Study the Bible?', type:"video"}),
       new Placement({_id: 'pub/video/', name: 'Who Is the Author of the Bible?', type:"video"}),

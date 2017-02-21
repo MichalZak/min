@@ -47,14 +47,22 @@ export class Placement extends Doc {
     name:string;
     type:string;
     shortName?:string;
+    pubType?: string;
     category?:string;
     fav?:boolean;
     image?:string;
+    language?:string;
+    priority?:number;
 
     getImage(){
         if(!this.image)
             return "assets/img/publications/default_E_md.jpg"
         return "assets/img/publications/"+this.image;
+    }
+    getPriority():number{
+        if(this.priority)
+            return this.priority;
+        return 0;
     }
 
     

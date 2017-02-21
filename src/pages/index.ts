@@ -11,10 +11,7 @@ import { SignupPage } from './auth/signup';
 import { CallDetailPage } from './calls/call-detail';
 import { CallListPage } from './calls/call-list';
 import { CallVisitPage } from './calls/call-visit';
-import { VisitBooksPage } from './calls/visit-books';
-import { VisitMagsPage } from './calls/visit-mags';
-import { VisitTractsPage } from './calls/visit-tracts';
-import { VisitVideosPage } from './calls/visit-videos';
+import { VisitPlacementsPage } from './calls/visit-placements';
 
 
 //Notes
@@ -46,10 +43,7 @@ export {
   CallListPage,
   CallDetailPage,
   CallVisitPage,
-  VisitBooksPage,
-  VisitMagsPage,
-  VisitTractsPage,
-  VisitVideosPage,
+  VisitPlacementsPage,
 
   //notes
   NoteListPage,
@@ -75,10 +69,7 @@ export function GetPages() {
     CallListPage,
     CallDetailPage,
     CallVisitPage,
-    VisitBooksPage,
-    VisitMagsPage,
-    VisitTractsPage,
-    VisitVideosPage,
+    VisitPlacementsPage,
 
     //Notes
     NoteListPage,

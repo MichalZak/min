@@ -258,22 +258,22 @@ export class DataProvider {
     this._pouch.sync(this._pouchRemote, this._syncOptions)
         .on('change', function (info) {
           // handle change
-          console.log('DataProvider Pouch Sync OnChange:'+JSON.stringify(info));
+          console.log('DataProvider Pouch Sync OnChange:', info);
         }).on('paused', function (err) {
           // replication paused (e.g. replication up to date, user went offline)
-          console.log('DataProvider Pouch Sync OnPaused:'+JSON.stringify(err));
+          console.log('DataProvider Pouch Sync OnPaused:', err);
         }).on('active', function () {
           // replicate resumed (e.g. new changes replicating, user went back online)
           console.log('DataProvider Pouch Sync OnActive');
         }).on('denied', function (err) {
           // a document failed to replicate (e.g. due to permissions)
-          console.log('DataProvider Pouch Sync OnDenied:'+JSON.stringify(err));
+          console.log('DataProvider Pouch Sync OnDenied:', err);
         }).on('complete', function (info) {
           // handle complete
-          console.log('DataProvider Pouch Sync OnComplete:'+JSON.stringify(info));
+          console.log('DataProvider Pouch Sync OnComplete:', info);
         }).on('error', function (err) {
           // handle error
-          console.log('DataProvider Pouch Sync OnErr:'+JSON.stringify(err));
+          console.log('DataProvider Pouch Sync OnErr:', err);
         });
 
   }

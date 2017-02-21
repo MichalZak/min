@@ -3,7 +3,7 @@ import { App, Events, Platform, AlertController } from 'ionic-angular';
 import { StatusBar, Splashscreen, CodePush } from 'ionic-native';
 
 //prividers
-import { Settings } from '../providers';
+import { Settings, Placements } from '../providers';
 import { Auth } from '../providers/auth';
 
 //pages
@@ -21,6 +21,7 @@ export class MyApp {
   constructor(app: App,
               platform: Platform,
               settings: Settings,
+              placements: Placements,
               public alertCtrl: AlertController,
               auth: Auth, 
               events: Events) {
@@ -43,6 +44,8 @@ export class MyApp {
             events.publish(Auth.AUTH_LOGIN);
           
           this.rootPage = TabsPage;
+
+          placements.syncData();
 
         }).catch(err=>{
           console.log("AppComponent -> Settings-> ERROR: "+JSON.stringify(err));

@@ -5,7 +5,7 @@ import { DataProvider } from '../../providers';
 import * as moment from 'moment';
 import * as _ from "lodash";
 import { saveIntoArray } from '../../utils';
-import { VisitBooksPage, VisitMagsPage, VisitTractsPage, VisitVideosPage } from '../'
+import { VisitPlacementsPage } from '../'
 
 @Component({
   selector: 'page-call-visit',
@@ -29,12 +29,15 @@ export class CallVisitPage {
   }
 
   ionViewWillEnter() {
-    this.call = Object.assign({}, this.navParams.get("call")); 
+    this.call = _.merge({}, this.navParams.get("call")); 
+
     if(this.call.visits == null)
       this.call.visits = new Array<Visit>();
-    this.visit = Object.assign({}, this.navParams.get('visit'));
+    this.visit =_.merge({}, this.navParams.get('visit'));
+    
     if(this.visit.placements == null)
       this.visit.placements = new Array<Placement>();
+    
     this.minDate = moment.utc().startOf('day').format('YYYY-MM-DD');
     this.maxDate = moment.utc().add(2, 'y').format('YYYY-MM-DD');
 
@@ -47,6 +50,9 @@ export class CallVisitPage {
   save(){
     console.log("ARE WE SAVING VISIT: ");
     //lets see if changes where made
+    console.log("this.visit", this.visit);
+    console.log("Params Visit",this.navParams.get("visit"));
+    console.log("Equal", _.isEqual(this.visit, this.navParams.get("visit")));
     if(_.isEqual(this.visit, this.navParams.get("visit")))
       return; //no changes have been make, no need to save
     
@@ -62,24 +68,10 @@ export class CallVisitPage {
     this.visit.placements.splice( index, 1 );
   }
 
-  addVideo(){
-    let modal = this.modalCtrl.create(VisitVideosPage, {
-      enableBackdropDismiss: true,
-      showBackdrop: true
-    });
-    modal.onDidDismiss(data => {
-      console.log(data);
 
-      if(data){
-        this.visit.placements.push(data);
-      }
-    });
 
-    modal.present();
-  }
-
-  addBook(){
-    let modal = this.modalCtrl.create(VisitBooksPage, {
+  addPlacement(){
+    let modal = this.modalCtrl.create(VisitPlacementsPage, {
       enableBackdropDismiss: true,
       showBackdrop: true
     });

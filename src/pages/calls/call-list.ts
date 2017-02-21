@@ -41,7 +41,8 @@ export class CallListPage {
     this.subscription = this.dataProvider.getDocsObservable('call').subscribe(
       docs =>{
         //onNext
-        console.log(docs);
+        //console.log(docs);
+
         this.calls = docs.sort((a,b)=>{
           //sort by priority->date->name
           if(a.priority < b.priority)
