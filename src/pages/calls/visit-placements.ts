@@ -9,47 +9,43 @@ import { Placement } from '../../models';
 })
 export class VisitPlacementsPage {
 
-  books:Placement[];
-  tracts:Placement[];
-  mags:Placement[];
-  videos_whiteboard:Placement[];
-  videos_tools:Placement[];
-  videos_transforms_lives:Placement[];
-  videos_interviews:Placement[];
+  categories:Array<any>;
+  language:string = 'chs';
 
-  other:Array<any>; //other book, other video, other tract... write detail in notes section
-
-   constructor(public viewCtrl: ViewController , 
+  constructor(public viewCtrl: ViewController , 
               public placemenets: Placements) {}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad VisitVideosPage');
   }
 
-  ionViewWillEnter() {
+  ionViewWillEnter(save:boolean = true) {
     //this.items = this.placemenets.getBooks();
     //this.studyList = this.placemenets.getBooks().filter(doc=> (doc.category === 'study' && doc.type === 'book' ))
+    //English
+    this.categories = new Array<any>();
+    var cats =  this.placemenets.getDoc('pub/setup/e')['categories'];
+    let docs_e = this.placemenets.getDocs().filter(doc=> doc.language === 'E');
+    cats.forEach(cat=>{
+      let pubs = docs_e.filter(doc=> doc.pubType === cat.pubType);
+      if(cat.category)
+        pubs = pubs.filter(doc => doc.category === cat.category)
 
+      //now lets order them, for mags we need opposite
+      if(cat.pubType === 'mag')
+        pubs.sort(this.sortMags);
+      else
+        pubs.sort(this.sortFunction);
 
-    let docs = this.placemenets.getDocs().filter(doc => doc.language==='E');
-
-    this.books = docs.filter(doc=>doc.pubType === 'book').sort(this.sortFunction);
-    this.tracts = docs.filter(doc=>doc.pubType === 'tract').sort(this.sortFunction);
-    this.mags = docs.filter(doc=>doc.pubType === 'mag/a' || doc.pubType === 'mag/w').sort(this.sortMags);
-    
-    let videos = docs.filter(doc=> doc.pubType === 'video');
-    console.log("videos", videos);
-    this.videos_whiteboard = videos.filter(doc => doc.category === 'whiteboard').sort(this.sortFunction);
-    this.videos_tools = videos.filter(doc => doc.category === 'tools').sort(this.sortFunction);
-    this.videos_transforms_lives = videos.filter(doc => doc.category === 'transforms_lives').sort(this.sortFunction);
-    this.videos_interviews = videos.filter(doc=>doc.category === 'interviews').sort(this.sortFunction);
-
+      this.categories.push({heading: cat.name, priority: cat.priority,  publications:pubs});
+    });
   }
+
 
   sortFunction(a:Placement, b:Placement){
     if(a.getPriority() < b.getPriority())
       return 1;
-    if(a.getPriority() > b.getPriority())
+    if(a.getPriority() > b.getPriority()) 
       return -1;
     if(a.name < b.name)
       return -1;
@@ -71,7 +67,7 @@ export class VisitPlacementsPage {
     this.viewCtrl.dismiss(item);
   }
 
-  exit(){
+  close(){
     this.viewCtrl.dismiss();
   }
 

@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular'; 
 import {Placement } from '../models';
 import { Settings } from './settings';
+import { Api } from './api';
 import PouchDB from 'pouchdb';
+import * as _ from "lodash";
 import { Doc } from '../models';
 import 'rxjs/add/operator/map';
 
@@ -21,6 +23,7 @@ export class Placements {
 
 
   constructor(private platform: Platform,
+              public api: Api, 
               public settings: Settings) {
     console.log('Hello Placements Provider');
   }
@@ -30,14 +33,19 @@ export class Placements {
     return this._docs;
   }
 
-  //Call this when loading app
-  public syncData(){
-    this.initPouch("min_publications", true);
+  getDoc(id:string):Doc{
+    return this._docs.find(doc=> doc._id === id);
   }
 
+  //Call this when loading app
+  public syncData(){
+    this.initPouch("min_publications", 
+      this.settings.getValue('database_properties')).then(res => {
+      //this.checkForUpdates();
+    });
+  }
 
-
-  private initPouch(pouchName:string, connectRemote:boolean=false):Promise<any> {
+  private initPouch(pouchName:string, remotedb:string=''):Promise<any> {
     console.log('DataProvider->initDB localName: '+JSON.stringify(pouchName));
     return this.platform.ready().then(()=>{
       this._pouch = new PouchDB(pouchName, this._localPouchOptions);
@@ -48,8 +56,15 @@ export class Placements {
       this._pouch.allDocs({include_docs: true})
         .then(doc => {
           console.log("Init Docs: "+JSON.stringify(doc));
+
+          
           //this.loadAllDocs(doc.rows);
-          let state:Placement[] = doc.rows.map(row => new Placement(row.doc));
+          let state:Placement[] = doc.rows.map(row =>{
+            if(row.doc._id === 'pub/setup/e')
+              console.log('found e settings doc', row.doc);
+             let p = new Placement(row.doc);
+             return p;
+          });
           this.loadAllDocs(state);
 
         });
@@ -69,47 +84,137 @@ export class Placements {
          })
 
       //connect to remote 
-      if(connectRemote)
-          this.initRemotePouch();
-
-        
+      if(remotedb != '')
+        this.initRemotePouch(remotedb); 
     });//end of platform ready
   }
 
-  
-  private initRemotePouch(){
-    let db = this.settings.getValue("database_publications");
 
-    this._pouchRemote = new PouchDB(db);
 
-    this._pouch.replicate.from(this._pouchRemote, {
-      filter: 'myFilters/languageFilter',
-      query_params: {
-        languages: ['E', 'CHS' ]
-      },
-      live: false,
-      retry: false,})
+
+  private initRemotePouch(remotedb:string){
+    console.log("DataProvider init Remote url: "+JSON.stringify(remotedb));    
+    this._pouchRemote = new PouchDB(remotedb);
+
+    this._pouch.replicate.from(this._pouchRemote)
         .on('change', function (info) {
           // handle change
-          console.log('DataProvider Pouch Sync OnChange:', info);
+          console.log('DataProvider Pouch Sync OnChange:'+JSON.stringify(info));
         }).on('paused', function (err) {
           // replication paused (e.g. replication up to date, user went offline)
-          console.log('DataProvider Pouch Sync OnPaused:', err);
+          console.log('DataProvider Pouch Sync OnPaused:'+JSON.stringify(err));
         }).on('active', function () {
           // replicate resumed (e.g. new changes replicating, user went back online)
           console.log('DataProvider Pouch Sync OnActive');
         }).on('denied', function (err) {
           // a document failed to replicate (e.g. due to permissions)
-          console.log('DataProvider Pouch Sync OnDenied:', err);
+          console.log('DataProvider Pouch Sync OnDenied:'+JSON.stringify(err));
         }).on('complete', function (info) {
           // handle complete
-          console.log('DataProvider Pouch Sync OnComplete:', info);
+          console.log('DataProvider Pouch Sync OnComplete:'+JSON.stringify(info));
         }).on('error', function (err) {
           // handle error
-          console.log('DataProvider Pouch Sync OnErr:', err);
+          console.log('DataProvider Pouch Sync OnErr:'+JSON.stringify(err));
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  checkForUpdates(keys = ['global']){
+    //here we would load what languages from settings
+    //var url = this.settings.getValue('web_url');
+    var lastUpdate = this.settings.getValue('update_date') || '';
+    keys.forEach(key =>{
+      let seq = this.api.get('getupdates', {key:key, date:lastUpdate});
+
+      seq
+        .map(res => res.json())
+        .subscribe(res =>{
+          console.log('Loaded for Settings/'+key, res);
+          res.forEach(doc =>{
+            console.log("Updating doc", doc);
+            this.save(doc);
+          });
+        }, err =>{
+          console.log('Loading Settings Error', err);
         });
 
+    })//forEach
   }
+
+  
+
+  save(doc:Doc): Promise<any>{
+    return new Promise((resolve,reject) =>{
+      //merging so first get the doc
+      this._pouch.get(doc._id).then(doc2 =>{
+        //doc already exists, so lets modify it with latest values
+        //first remove old rev value
+        console.log("Doc found, lets merge it: ", doc2);
+
+        this._pouch.put(_.merge({}, doc2, doc ))
+          .then((res)=>{
+            resolve(res);
+          })
+          .catch(err=>{
+            console.log('Datarovider Save/Merge Error:'+JSON.stringify(err));
+            reject(err);
+          });
+      }).catch(err =>{
+        //no doc found so lets just save new
+        this._pouch.put(doc)
+          .then((res)=>{
+            resolve(res);
+          })
+          .catch(err=>{
+            console.log('Datarovider Save Error:'+JSON.stringify(err));
+            reject(err);
+          }); 
+      });//end of catche
+    });//end of promise
+  }
+
+  _save(doc:Doc): Promise<any>{
+    return new Promise((resolve,reject) =>{
+      console.log('DataProvider->save doc: ', doc);
+      this._pouch.put(doc)
+        .then((res)=>{
+          resolve(res);
+        })
+        .catch(err=>{
+          console.log('Datarovider Save Error:'+JSON.stringify(err));
+          reject(err);
+        }); 
+      })
+  }
+
+  remove(doc:Doc): Promise<Doc>{
+    return new Promise((res,rej) =>{
+        this._pouch.get(doc._id).then((doc)=>{
+            doc._deleted = true;
+            res(this._pouch.put(doc));
+        })
+    });
+  }
+
 
   private loadAllDocs(docs:Placement[]){
     this._docs = docs;
@@ -148,68 +253,5 @@ export class Placements {
       return -1;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  getBooks2():Placement[]{
-    return [
-      new Placement({_id: 'pub/book/bh', name: 'Bible Teach', fullName: 'What Does the Bible Really Teach?', shortName: 'bh', type:"book", category: "study"}), 
-      new Placement({_id: 'pub/book/nwt', name: 'NWT Bible', shortName: 'nwt', type:"book", category: "study"}), 
-
-      new Placement({_id: 'pub/book/lc', name: 'Was Life Created?', shortName: 'lc', type:"book"}),
-      new Placement({_id: 'pub/book/lf', name: 'The Origin of Life—Five Questions Worth Asking', shortName: 'lf', type:"book"}), 
-      new Placement({_id: 'pub/book/hf', name: 'Your Family Can Be Happy', shortName: 'hf', type:"book"}), 
-      new Placement({_id: 'pub/book/bhs', name: 'Teach Us?', shortName: 'bhs', type:"book", category: "study"}), 
-      new Placement({_id: 'pub/book/pc', name: 'Peace&Happiness', shortName: 'pc', type:"book", category: "study"}), 
-      new Placement({_id: 'pub/book/fb', name: 'Good News From God!', shortName: 'fb', type:"book"}), 
-      new Placement({_id: 'pub/book/jl', name: 'Jehovah’s Will?', shortName: 'jl', type:"book", category: "study"}), 
-      new Placement({_id: 'pub/book/yp1', name: 'Questions Young People Ask 1', shortName: 'yp1', type:"book"}), 
-      new Placement({_id: 'pub/book/yp2', name: 'Questions Young People Ask 2', shortName: 'yp2', type:"book"}), 
-      new Placement({_id: 'pub/book/ll', name: 'Listen to God and Live Forever', shortName: 'll', type:"book"}), 
-      new Placement({_id: 'pub/book/lr', name: 'Learn From the Great Teacher', shortName: 'lr', type:"book"}), 
-      new Placement({_id: 'pub/book/lv', name: 'God’s Love', shortName: 'lv', type:"book", category: "study"}), 
-      new Placement({_id: 'pub/book/cl', name: 'Draw Close to Jehovah', shortName: 'cl', type:"book"}), 
-      new Placement({_id: 'pub/book/my', name: 'My Book of Bible Stories', shortName: 'my', type:"book"}), 
-    ];
-  }
-
-  getTracts(){
-    
-  }
-
-  getVideos2():Placement[]{
-   return [
-      new Placement({_id: 'pub/video/', name: 'Why Study the Bible?', type:"video"}),
-      new Placement({_id: 'pub/video/', name: 'Who Is the Author of the Bible?', type:"video"}),
-      new Placement({_id: 'pub/video/',name: 'How Can We Be Sure the Bible Is True?', type:"video"}),
-      new Placement({_id: 'pub/video/',name: 'What Happens at a Kingdom Hall?', type:"video"}),
-      new Placement({_id: 'pub/video/',name: 'Was Life Created? Introduction', type:"video"}),
-      new Placement({_id: 'pub/video/',name: 'Does God Have a Name?', type:"video"}),
-      new Placement({_id: 'pub/video/',name: 'Why Did Jesus Die?', type:"video"}),
-      new Placement({_id: 'pub/video/',name: 'Strength Comes From Serving Jehovah', type:"video"}), 
-      new Placement({_id: 'pub/video/', name: 'I Got Fed Up With My Lifestyle', type:"video"}),
-    ]
-  }
 
 }

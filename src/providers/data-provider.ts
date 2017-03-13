@@ -18,20 +18,11 @@ import 'rxjs/add/operator/first';
 export class DataProvider {
 
   private _pouch:any;
-  private _pouchRemote:any;
   private _docs: BehaviorSubject<Doc[]>;
-  private _selectedDoc: BehaviorSubject<Doc>;
   private dataStore: {
     docs: Doc[],
     selectedDoc: Doc
   };
-
-  public tempStore:any = {}; //temporarly store data, when switching views
-
-  private _syncOptions = {
-      live: false,
-      retry: false,
-    };
 
   private _localPouchOptions = {
     revs_limit: 10,
@@ -46,39 +37,7 @@ export class DataProvider {
 
     this.dataStore = {docs:[], selectedDoc: new Doc()};
     this._docs = <BehaviorSubject<Doc[]>>new BehaviorSubject([]);
-    
-
-    this.setupAuthEventListeners();
-
-
-
-  }
-
-  setupAuthEventListeners(){
-
-    //see if we where authenticated before DataProvider was created
-    if(this.auth.loggedIn())
-    {
-      console.log("USER", this.auth.user);
-      //lets init databases
-      this.initPouch(this.auth.user.username, true); 
-    }
-    else{
-      this.initPouch("guest"); 
-    }
-
-    //load listen for login event, if so, connect to remote database
-    this.events.subscribe(Auth.AUTH_LOGIN, ()=>{
-          console.log("DataProvider Event Login");
-          console.log("Auth Username: "+this.auth.user.username);
-          this.initPouch(this.auth.user.username, true);    
-    });
-
-    this.events.subscribe(Auth.AUTH_LOGOUT, ()=>{
-      console.log('DataProvider Event Logout');
-      this.disconectRemote();
-      this.initPouch("guest"); 
-    });
+    this.initPouch('guest');
   }
 
   /* Get single doc by id */
@@ -124,7 +83,7 @@ export class DataProvider {
 
   save(doc:Doc): Promise<any>{
     return new Promise((resolve,reject) =>{
-      console.log('DataProvider->save doc: '+JSON.stringify(doc));
+      console.log('DataProvider->save doc: ', doc);
       this._pouch.put(doc)
         .then((res)=>{
           resolve(res);
@@ -208,7 +167,7 @@ export class DataProvider {
   private initPouch(pouchName:string, connectRemote:boolean=false):Promise<any> {
     console.log('DataProvider->initDB localName: '+JSON.stringify(pouchName));
     return this.platform.ready().then(()=>{
-      this._pouch = new PouchDB(pouchName, this._localPouchOptions);
+      this._pouch = new PouchDB(pouchName+"_min", this._localPouchOptions);
       window['PouchDB'] = PouchDB;//make it visible for chrome extension
 
       //lets load all the data and then listen to all the changes
@@ -234,58 +193,10 @@ export class DataProvider {
                 this.saveSuccessful(change.doc); 
             }
          })
-
-         //connect to remote 
-         if(connectRemote)
-          this.initRemotePouch();
-
-        
+      
     });//end of platform ready
   }
 
-
-  
-  private initRemotePouch(){
-    let db = this.settings.getValue("database_name");
-
-    this._pouchRemote = new PouchDB("https://"+this.auth.user.username+":"+this.auth.user.password+"@"+db, {
-      /*auth:{
-        username: this.auth.user.username,
-        password: this.auth.user.password
-      }*/
-    });
-
-    this._pouch.sync(this._pouchRemote, this._syncOptions)
-        .on('change', function (info) {
-          // handle change
-          console.log('DataProvider Pouch Sync OnChange:', info);
-        }).on('paused', function (err) {
-          // replication paused (e.g. replication up to date, user went offline)
-          console.log('DataProvider Pouch Sync OnPaused:', err);
-        }).on('active', function () {
-          // replicate resumed (e.g. new changes replicating, user went back online)
-          console.log('DataProvider Pouch Sync OnActive');
-        }).on('denied', function (err) {
-          // a document failed to replicate (e.g. due to permissions)
-          console.log('DataProvider Pouch Sync OnDenied:', err);
-        }).on('complete', function (info) {
-          // handle complete
-          console.log('DataProvider Pouch Sync OnComplete:', info);
-        }).on('error', function (err) {
-          // handle error
-          console.log('DataProvider Pouch Sync OnErr:', err);
-        });
-
-  }
-
-
-
-
-
-  private disconectRemote(){
-    //TODO: there needs to be a better way to stop sync
-    this._pouchRemote = null;
-  }
 
 
 }

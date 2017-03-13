@@ -26,22 +26,14 @@
 
 
   <button (click)="addPlacement()"  ion-button icon-left><ion-icon name="book"></ion-icon> Add Placement</button>
-  <!--
-  <button (click)="addMag()"  ion-button icon-left><ion-icon name="book"></ion-icon> Add Magazine</button>
-  <button (click)="addTract()"  ion-button icon-left><ion-icon name="document"></ion-icon> Add Tract</button>
-  -->
+
   <ion-label>Placements:</ion-label>
-   <ion-list>
-    <ion-item-sliding *ngFor="let item of visit.placements; let i = index;" >
-      <button ion-item >      
-            <h2>({{item.type}}) {{item.name}}</h2>
-      </button> 
-      <ion-item-options>
-         <button ion-button color="danger" (click)="remove(i)">
-            Remove
-         </button>
-      </ion-item-options>
-    </ion-item-sliding>
-  </ion-list>
+
+  <ion-scroll scrollX="true">
+    <button *ngFor="let pub of visit.placements; let i = index;" (click)="remove(pub, i)" clear class="publication-item" >
+      <img  src="{{getPubImage(pub)}}"  height="85"><br/>
+      {{pub.name}}
+    </button>
+  </ion-scroll>
 
 </ion-content>

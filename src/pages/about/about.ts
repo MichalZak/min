@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, Events } from 'ionic-angular';
 import { WelcomePage } from '../';
-import { Auth } from '../../providers';
+import { Auth, DataProvider } from '../../providers';
 
 @Component({
   selector: 'page-about',
@@ -9,19 +9,21 @@ import { Auth } from '../../providers';
 })
 export class AboutPage {
 
-  username:string = "";
+  languages:any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public auth: Auth, public events:Events) {}
+  constructor(public navCtrl: NavController, 
+              public navParams: NavParams, 
+              public auth: Auth,
+              public dataProvider: DataProvider, 
+              public events:Events) {}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AboutPage');
   }
 
   ionViewWillEnter() {
-    if(this.auth.user != null && this.auth.user.username != null)
-      this.username = this.auth.user.username
-    else
-      this.username = "Guest";
+    this.languages = this.dataProvider.getDoc('pub/global/languages');
+    console.log("Languages: ", this.languages);
   }
 
 
@@ -29,14 +31,6 @@ export class AboutPage {
     this.navCtrl.push(WelcomePage);
   }
 
-  logout(){
-    this.auth.logout();
-    this.username = "Guest";
-  }
-
-  checkCodePush(){
-    this.events.publish('CODEPUSH_CHECK');
-  }
 
 
 }

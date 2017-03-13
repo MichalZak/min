@@ -17,7 +17,7 @@ export class Api {
 
   get(endpoint: string, params?: any,  url?:string, options?: RequestOptions) {
     if(!url)
-      url = this.settings.getValue('WebUrl');
+      url = this.settings.getValue('web_url');
 
     if (!options) {
       options = new RequestOptions();
@@ -42,7 +42,7 @@ export class Api {
   }
 
   post(endpoint: string, body: any, options?: RequestOptions) {
-    let url = this.settings.getValue('WebUrl');
+    let url = this.settings.getValue('web_url');
     console.log('api-> Post: '+ url + '/' + endpoint);
     console.log('body: '+JSON.stringify(body));
     console.log('options: '+JSON.stringify(options));

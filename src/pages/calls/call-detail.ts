@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import { NavController, NavParams, AlertController, ToastController } from 'ionic-angular';
 import * as _ from "lodash"
-import { Call, Visit } from '../../models';
+import { Call, Visit, Placement } from '../../models';
 import { DataProvider } from '../../providers';
 import { Api } from '../../providers';
 import { CallVisitPage } from './call-visit';
@@ -41,10 +41,11 @@ export class CallDetailPage {
   }
 
   ionViewWillEnter() {
-    console.log("****Ionview Will Enter");
+    console.log("****&&&&&&&&&&&&&&&&&&&&Ionview Will Enter");
     
     this.subscription = this.dataProvider.getDocObservable(this.navParams.get('call')).subscribe(
       doc =>{
+        console.log("Viewing Call Detail ", doc);
         this.call = Object.assign({}, doc);
         console.log("CallDetail Call Update", this.call);
         this.oldCall = Object.assign({}, doc);
@@ -52,50 +53,20 @@ export class CallDetailPage {
         //this.ref.detectChanges();
       }
     );
-
-
-    
-    
-    /*
-    if(this.dataProvider.tempStore['call'] != null)
-    {
-      console.log("we are loading from tempStore");
-      this.call = Object.assign({}, this.dataProvider.tempStore['call']);
-      this.dataProvider.tempStore['call'] = null;
-      //we are returning from visit view, so lets save
-      this.dataProvider.save(this.call).then(res=>{
-        console.log("SAVED CALL RES: ", res);
-        //lets reload the saved object
-        this.call = Object.assign({}, this.dataProvider.getDoc(res.id));
-        this.oldCall = Object.assign({}, this.call);
-        console.log("IONVIEW ENTER: ", this.call);
-        this.ref.markForCheck();
-
-      })
-
-    }
-    else
-    {
-      this.call = Object.assign({}, this.navParams.get("call"));
-      this.oldCall = Object.assign({}, this.call);
-      console.log("IONVIEW ENTER: ", this.call);
-      this.ref.markForCheck();
-    }
-    
-    this.minDate = moment.utc().startOf('day').subtract(1,'y').format('YYYY-MM-DD');
-    this.maxDate = moment.utc().add(2, 'y').format('YYYY-MM-DD');
-    */
   }
+getPubImage(value):string{
+    let pub = new Placement(value)
+    return pub.getImage();
+}
 
-  ionViewWillLeave(){
+ionViewWillLeave(){
     this.save(); 
     this.subscription.unsubscribe();
-  }
+}
 
-  save(){
-
+save(){
     //are we saving?
-    console.log("Are we saving?");
+    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$Are we saving?");
     //lets see if changes where made
     if(_.isEqual(this.call, this.oldCall))
       return; //no changes have been make, no need to save
@@ -103,6 +74,7 @@ export class CallDetailPage {
     console.log("Yes we are: ", this.call);
     this.dataProvider.save(this.call);
  }
+
  setBackDate(){
    console.log("setting up call back date");
    this.call.date =  moment().format('YYYY-MM-DD');
@@ -117,11 +89,11 @@ export class CallDetailPage {
 
  removeVisit(index:number){
    this.call.visits.splice(index,1);
+   this.dataProvider.save(this.call);
  }
 
  viewVisit(visit:Visit){
-   this.dataProvider.tempStore['call'] = null;
-   this.navCtrl.push(CallVisitPage,{visit:visit, call:this.call});
+   this.navCtrl.push(CallVisitPage,{visit:visit, callid:this.call._id});
  }
 
 

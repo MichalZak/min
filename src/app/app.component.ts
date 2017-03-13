@@ -37,12 +37,12 @@ export class MyApp {
           console.log("AUTH USER: "+ auth.loggedIn() + ":: ", auth.user);
           console.log("SETTINGS: ", settings.getAll());
 
-          if(settings.getValue(Auth.AUTH_SETTING_KEY) != null)
+         /* if(settings.getValue(Auth.AUTH_SETTING_KEY) != null)
             auth.loadUser(settings.getValue(Auth.AUTH_SETTING_KEY));
 
           if(auth.loggedIn())
             events.publish(Auth.AUTH_LOGIN);
-          
+        */
           this.rootPage = TabsPage;
 
           placements.syncData();
@@ -52,7 +52,7 @@ export class MyApp {
           console.error(err);
         });
 
-
+/*
         events.subscribe(Auth.AUTH_LOGOUT, ()=>{
           console.log("App Components Event Logout");
 
@@ -65,7 +65,7 @@ export class MyApp {
           //app.getRootNav().setRoot(TabsPage);
           
         });
-
+*/
         events.subscribe('CODEPUSH_CHECK', ()=>{
           try{
 

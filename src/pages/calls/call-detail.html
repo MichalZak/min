@@ -22,8 +22,6 @@
         <ion-datetime *ngIf="call.date"
           displayFormat="DDD(D) MMM YYYY" 
           pickerFormat="DDD(D) MMM YYYY" 
-          [min]="minDate" 
-          [max]="maxDate"
           placeholder="Select Return Date"
           [(ngModel)]="call.date">
         </ion-datetime>
@@ -56,8 +54,13 @@
     Visits:
     <ion-list>
       <ion-item-sliding *ngFor="let item of call.visits; let i = index;" >
-        <button ion-item (click)="viewVisit(item)" >     
-              <h2 *ngFor="let placement of item.placements" >{{placement.type}}::{{placement.name}}</h2> 
+        <button ion-item (click)="viewVisit(item)" >    
+              <div item-left>
+                <div style="float:left;" *ngFor="let placement of item.placements" class="publication-item" >
+                  <img src="{{getPubImage(placement)}}"  height="85" />
+                   <br/><div style="font-size: x-small; text-align: center;" class="publication-text">{{placement.name}}</div>
+                </div> 
+              </div>
               <ion-note>
                 {{item.note}}                
               </ion-note>
@@ -66,7 +69,7 @@
               </p>
         </button> 
         <ion-item-options>
-          <button ion-button color="danger" (click)="removeVisit(index)">
+          <button ion-button color="danger" (click)="removeVisit(i)">
               Remove
           </button>
         </ion-item-options>

@@ -44,8 +44,8 @@ export class Call extends Doc {
 }
 
 export class Placement extends Doc {
-    name:string;
-    type:string;
+    name?:string;
+    type?:string;
     shortName?:string;
     pubType?: string;
     category?:string;
@@ -54,10 +54,21 @@ export class Placement extends Doc {
     language?:string;
     priority?:number;
 
+    //for other purposes properties
+    modified: string;
+    language_short: string;
+    categories:any;
+
     getImage(){
-        if(!this.image)
-            return "assets/img/publications/default_E_md.jpg"
-        return "assets/img/publications/"+this.image;
+        if(this.image)
+        {
+            if(this.pubType === 'video')
+                return "assets/img/publications/"+this.image;
+            else
+                return "assets/img/publications/"+ this.language +"/"+this.image;
+        }
+        return "assets/img/publications/default_E_md.jpg"
+        
     }
     getPriority():number{
         if(this.priority)

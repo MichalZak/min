@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { NavController, NavParams, AlertController, ModalController  } from 'ionic-angular';
 import { Call, Visit, Placement } from '../../models';
 import { DataProvider } from '../../providers';
@@ -9,12 +9,14 @@ import { VisitPlacementsPage } from '../'
 
 @Component({
   selector: 'page-call-visit',
-  templateUrl: 'call-visit.html'
+  templateUrl: 'call-visit.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CallVisitPage {
 
   call:Call = new Call();
   visit:Visit = new Visit();
+  subscription:any;
   minDate:any;
   maxDate:any;
 
@@ -22,6 +24,7 @@ export class CallVisitPage {
               public alertCtrl: AlertController,
               public modalCtrl: ModalController ,
               public dataProvider: DataProvider,
+              private ref: ChangeDetectorRef,
               public navParams: NavParams) {}
 
   ionViewDidLoad() {
@@ -29,22 +32,60 @@ export class CallVisitPage {
   }
 
   ionViewWillEnter() {
-    this.call = _.merge({}, this.navParams.get("call")); 
 
-    if(this.call.visits == null)
-      this.call.visits = new Array<Visit>();
-    this.visit =_.merge({}, this.navParams.get('visit'));
-    
-    if(this.visit.placements == null)
-      this.visit.placements = new Array<Placement>();
-    
-    this.minDate = moment.utc().startOf('day').format('YYYY-MM-DD');
-    this.maxDate = moment.utc().add(2, 'y').format('YYYY-MM-DD');
+    this.subscription = this.dataProvider.getDocObservable(this.navParams.get('callid')).subscribe(
+      doc =>{
+        this.call = Object.assign({}, doc);
 
+        if(this.call.visits == null)
+          this.call.visits = new Array<Visit>();
+
+        this.visit =_.merge({}, this.navParams.get('visit'));
+
+        if(this.visit.placements == null)
+          this.visit.placements = new Array<Placement>();
+
+        this.ref.markForCheck();
+        //this.ref.detectChanges();
+      }
+    );
+
+  }
+
+  ionViewDidEnter(){
+    this.ref.markForCheck();
   }
 
   ionViewWillLeave(){
     this.save(); 
+    this.subscription.unsubscribe();
+  }
+
+  getPubImage(value):string{
+    let pub = new Placement(value)
+    return pub.getImage();
+  }
+
+  remove(publication, index){
+    let prompt = this.alertCtrl.create({
+      title: 'Remove '+ publication.name,
+      message: "Are you sure you want to remove this placement?",
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data=>{}//do nothing, just leave
+        },
+        {
+          text: 'Remove',
+          handler: data => {
+            this.visit.placements.splice( index, 1 );
+            this.ref.markForCheck();
+          }
+        }
+      ]
+    });
+    prompt.present();
+  
   }
 
   save(){
@@ -59,16 +100,11 @@ export class CallVisitPage {
     console.log("VISIT YES WE ARE");
     this.call.visits = saveIntoArray(this.visit, this.call.visits, "id");
     console.log("** New Visit Array: ", this.call.visits);
+    this.call.visits = _.orderBy(this.call.visits, ['date'], ['desc']);
+
     this.dataProvider.save(this.call);
     //this.dataProvider.tempStore['call'] = this.call;
  }
-
-
-  remove(index:number){
-    this.visit.placements.splice( index, 1 );
-  }
-
-
 
   addPlacement(){
     let modal = this.modalCtrl.create(VisitPlacementsPage, {
@@ -80,18 +116,10 @@ export class CallVisitPage {
 
       if(data){
         this.visit.placements.push(data);
+        this.ref.markForCheck();
       }
     });
 
     modal.present();
   }
-
-  addMag(){
-
-  }
-
-  addTract(){
-
-  }
-
 }

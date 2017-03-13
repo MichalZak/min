@@ -12,6 +12,7 @@ import { CallDetailPage } from './calls/call-detail';
 import { CallListPage } from './calls/call-list';
 import { CallVisitPage } from './calls/call-visit';
 import { VisitPlacementsPage } from './calls/visit-placements';
+import { PlacementsComponentComponent} from './calls/componenets/placements-component';
 
 
 //Notes
@@ -44,6 +45,7 @@ export {
   CallDetailPage,
   CallVisitPage,
   VisitPlacementsPage,
+  PlacementsComponentComponent,
 
   //notes
   NoteListPage,
@@ -70,6 +72,7 @@ export function GetPages() {
     CallDetailPage,
     CallVisitPage,
     VisitPlacementsPage,
+    PlacementsComponentComponent,
 
     //Notes
     NoteListPage,

@@ -2,81 +2,38 @@
 
   <ion-navbar>
     <ion-title>Publications</ion-title>
+    <ion-buttons end>
+        <button ion-button icon-only (click)="close()"><ion-icon name="close-circle"></ion-icon></button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content >
 
 
-  <h2>Books</h2>
+<div >
+  <ion-segment [(ngModel)]="language">
+    <ion-segment-button ng-selected="true" value="chs">
+      Chinese
+    </ion-segment-button>
+    <ion-segment-button value="e">
+      English
+    </ion-segment-button>
+  </ion-segment>
+</div>
 
-  <ion-scroll scrollX="true">
-    <button *ngFor="let item of books" (click)="select(item)" clear class="publication-item" >
-              <img  src="{{item.getImage()}}" width="60" height="85"><br/>
-              {{item.name}}
-    </button>
-  </ion-scroll>
+<div *ngFor="let item of categories">
+      <h2>{{item.heading}}</h2>
+      <ion-scroll scrollX="true">
+          <button *ngFor="let pub of item.publications" (click)="select(pub)" clear class="publication-item" >
+                    <img  src="{{pub.getImage()}}"  height="85"><br/>
+                    {{pub.name}}
+          </button>
+      </ion-scroll>
+</div>
 
-   <h2>Magazines</h2>
-
-  <ion-scroll scrollX="true">
-    <button *ngFor="let item of mags" (click)="select(item)" clear class="publication-item" >
-              <img  src="{{item.getImage()}}"  height="85"><br/>
-              {{item.name}}
-    </button>
-  </ion-scroll>
-
-  <h2>Tracts</h2>
-
-  <ion-scroll scrollX="true">
-    <button *ngFor="let item of tracts" (click)="select(item)" clear class="publication-item" >
-              <img  src="{{item.getImage()}}"  height="85"><br/>
-              {{item.name}}
-    </button>
-  </ion-scroll>
-
-  <h2>Videos: Tools for Ministry</h2>
-
-  <ion-scroll scrollX="true">
-    <button *ngFor="let item of videos_tools" (click)="select(item)" clear class="publication-item" >
-              <img  src="{{item.getImage()}}"  height="85"><br/>
-              {{item.name}}
-    </button>
-  </ion-scroll>
-
-  <h2>Videos: Whiteboard</h2>
-
-  <ion-scroll scrollX="true">
-    <button *ngFor="let item of videos_whiteboard" (click)="select(item)" clear class="publication-item" >
-              <img  src="{{item.getImage()}}"  height="85"><br/>
-              {{item.name}}
-    </button>
-  </ion-scroll>
-
-  <h2>Videos: Truth Transforms Lives</h2>
-
-  <ion-scroll scrollX="true">
-    <button *ngFor="let item of videos_transforms_lives" (click)="select(item)" clear class="publication-item" >
-              <img  src="{{item.getImage()}}"  height="85"><br/>
-              {{item.name}}
-    </button>
-  </ion-scroll>
-
-  <h2>Videos: Expert Interviews </h2>
-
-  <ion-scroll scrollX="true">
-    <button *ngFor="let item of videos_interviews" (click)="select(item)" clear class="publication-item" >
-              <img  src="{{item.getImage()}}"  height="85"><br/>
-              {{item.name}}
-    </button>
-  </ion-scroll>
-
-
-  <ion-fab top right edge>
-      <button ion-fab color="primary" (click)="exit()" mini ><ion-icon name="close"></ion-icon></button>
-  </ion-fab>
 
 
 
