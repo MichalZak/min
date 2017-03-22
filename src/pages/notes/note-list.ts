@@ -40,7 +40,7 @@ export class NoteListPage {
       docs =>{
         //onNext
         console.log(docs);
-        this.notes = docs
+        this.notes = docs.sort(this.sortByPriority);
         //this.ref.detectChanges();
         this.ref.markForCheck();
       },
@@ -89,6 +89,27 @@ export class NoteListPage {
     });
     prompt.present();
   
+  }
+
+   sortByPriority(a, b){
+    let aa = a.priority || 0;
+    let bb = b.priority || 0;
+
+    if(aa < bb)
+      return 1;
+
+    if(aa > bb)
+      return -1;
+
+    aa = a.name || '';
+    bb = b.name || '';
+    if(aa < bb)
+      return -1;
+
+    if(aa > bb)
+      return 1;
+
+    return 0;
   }
 
 

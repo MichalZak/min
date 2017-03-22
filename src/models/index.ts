@@ -18,6 +18,7 @@ export class Note extends Doc {
     title?: string;
     note?: string;
     date?: string;
+    priority?: number;
 
     constructor(values: Object = {}) {
         super();

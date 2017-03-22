@@ -4,7 +4,7 @@ import { generateId } from '../../utils';
 import { CallDetailPage } from '../';
 import { Call } from '../../models';
 import { DataProvider } from '../../providers';
-import * as _ from "lodash"
+//import * as _ from "lodash"
 import * as moment from 'moment';
 
 

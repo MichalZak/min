@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, Events } from 'ionic-angular';
-import { WelcomePage } from '../';
 import { Auth, DataProvider } from '../../providers';
+import { EmailComposer } from 'ionic-native';
 
 @Component({
   selector: 'page-about',
@@ -27,8 +27,24 @@ export class AboutPage {
   }
 
 
-  loginSignup(){
-    this.navCtrl.push(WelcomePage);
+  backup(){
+    console.log("Backup");
+    //get all the data
+    
+    let data = this.dataProvider.getDocs();
+    let s = JSON.stringify(data);
+
+    let to = 'michalzak@gmail.com';
+    let subject = 'this is email title';
+    let body = 'this is email body:  ';
+
+    let email = {
+      to: to,
+      subject: subject,
+      body: body+ s
+    }
+
+    EmailComposer.open(email);
   }
 
 

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Events, Platform } from 'ionic-angular'; 
 import PouchDB from 'pouchdb';
-import { generateId, saveIntoArray } from '../utils';
+import { saveIntoArray } from '../utils';
 import { Doc } from '../models';
 import { Auth } from './auth';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -54,8 +54,10 @@ export class DataProvider {
     return null;
   }
 
-  getDocs(type:string){
-    return  this.dataStore.docs.filter((doc)=> doc.type === type)
+  getDocs(type:string = null){
+    if(type)
+      return  this.dataStore.docs.filter((doc)=> doc.type === type)
+    return this.dataStore.docs;
   }
 
   getAllDocs(){

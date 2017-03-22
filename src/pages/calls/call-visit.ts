@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/
 import { NavController, NavParams, AlertController, ModalController  } from 'ionic-angular';
 import { Call, Visit, Placement } from '../../models';
 import { DataProvider } from '../../providers';
-import * as moment from 'moment';
+//import * as moment from 'moment';
 import * as _ from "lodash";
 import { saveIntoArray } from '../../utils';
 import { VisitPlacementsPage } from '../'

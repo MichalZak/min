@@ -20,6 +20,9 @@
             <ion-note>
               {{item.note }}
             </ion-note>
+            <p item-right align="right">
+              <ion-badge item-right *ngIf="item.priority != null" >{{item.priority}}</ion-badge>
+           </p>
       </button> 
       <ion-item-options>
          <button ion-button color="danger" (click)="remove(item)">
