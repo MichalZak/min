@@ -31,9 +31,9 @@
     <ion-item-sliding *ngFor="let item of calls" >
       <button ion-item (click)="view(item._id)" >      
             <h2>{{item.name}}</h2>
-            <ion-note>
+            <div class="label-note2">
               Note: {{item.note || 'No Note'}}
-            </ion-note>
+            </div>
             <ion-note *ngIf='item.visits != null && item.visits.length > 0'>
               <br/>
               {{item.visits[0].date}}: {{item.visits[0].note || 'No Visit Note'}}

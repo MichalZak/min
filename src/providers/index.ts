@@ -8,6 +8,7 @@ import { Api } from './api';
 import { Auth } from './auth';
 import { Placements } from './placements';
 import { getConfig } from '../config';
+import { TimeProvider } from './time-provider';
 
 
 
@@ -17,7 +18,7 @@ export {
   DataProvider,
   Settings,
   Placements,
-  
+  TimeProvider,
 
 }
 
@@ -33,6 +34,7 @@ export function GetProviders() {
     Storage,    
     DataProvider,
     Placements,
+    TimeProvider,
     { provide: Settings, useFactory: provideSettings, deps: [ Storage ] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler }

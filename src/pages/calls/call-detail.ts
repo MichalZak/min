@@ -58,7 +58,7 @@ getPubImage(value):string{
     let pub = new Placement(value)
     return pub.getImage();
 }
-
+ 
 ionViewWillLeave(){
     this.save(); 
     this.subscription.unsubscribe();
@@ -72,11 +72,11 @@ save(){
       return; //no changes have been make, no need to save
 
     console.log("Yes we are: ", this.call);
-    this.dataProvider.save(this.call);
+    this.dataProvider.save(this.call); 
  }
 
  setBackDate(){
-   console.log("setting up call back date");
+   console.log("setting up call back date"); 
    this.call.date =  moment().format('YYYY-MM-DD');
  }
 

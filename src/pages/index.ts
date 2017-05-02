@@ -19,15 +19,21 @@ import { PlacementsComponentComponent} from './calls/componenets/placements-comp
 import { NoteDetailPage } from './notes/note-detail';
 import { NoteListPage } from './notes/note-list';
 
+//Time
+import { TimeMonthPage } from './time/time-month';
+import { TimeDayPage } from './time/time-day';
+import { TimeYearPage } from './time/time-year';
+
 
 
 
 export const MainPage = TabsPage;
 
 // The initial root pages for our tabs (remove if not using tabs)
-export const Tab1Root = NoteListPage;
+export const Tab1Root = TimeMonthPage;
 export const Tab2Root = CallListPage;
-export const Tab3Root = AboutPage;
+export const Tab3Root = NoteListPage;
+export const Tab4Root = AboutPage;
 
 
 export {
@@ -47,11 +53,14 @@ export {
   VisitPlacementsPage,
   PlacementsComponentComponent,
 
-  //notes
+  //Notes
   NoteListPage,
-  NoteDetailPage
-  
+  NoteDetailPage,
 
+  //Time
+  TimeMonthPage,
+  TimeDayPage,
+  TimeYearPage,
 
 }
 
@@ -77,6 +86,11 @@ export function GetPages() {
     //Notes
     NoteListPage,
     NoteDetailPage,
+
+    //Time
+    TimeMonthPage,
+    TimeDayPage,
+    TimeYearPage,
 
 
   ];

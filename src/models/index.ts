@@ -1,4 +1,4 @@
-
+import * as moment from 'moment';
 
 export class Doc {
     public _id?:string;
@@ -27,6 +27,86 @@ export class Note extends Doc {
 
 }
 
+export class Day {
+    day?: number = 0;
+    books?: number = 0;
+    tracks?: number = 0;
+    mags?:number = 0;
+
+    placements?: number = 0;
+
+    videos?: number = 0;
+    hours?: number = 0;
+    rvs?: number = 0;
+
+    returns?: Student[] = new Array<Student>();
+    students?: Student[] = new Array<Student>();
+
+    constructor(values: Object = {}) {
+        Object.assign(this, values);
+    }
+    static checkIfHasActivity(day:Day):boolean{
+        let x = day.books+day.hours+day.mags+day.placements+day.rvs+day.tracks+day.videos;
+        return x > 0;
+    }
+}
+
+export class Student {
+    studentId?: string;
+    name?: string;
+}
+
+export class Month extends Doc {
+    days?: Day[];
+    studentSum?: number;
+    students?: Student[];
+
+    static findDay(month:Month, date:number):Day{
+        if (month.days == null){
+            month.days = new Array<Day>();
+            return new Day({day: date});
+        }
+        let day:Day;
+        month.days.forEach(d=>{
+            if(d.day == date) 
+                day = d; 
+        })
+
+        if(!day)
+            return new Day({day: date});
+        return day;
+    
+     }
+
+     static printDate(date:number, month:Month):string{
+         let d:string;
+        if(date < 10)
+            d= '0'+date;
+        else
+            d=''+date;
+         return moment(month._id+d,'YYYYMMDD' ).format('dddd, Do');
+     }
+
+     static totals(month:Month):any{
+         if(month.days == null) month.days = new Array<Day>();
+         return month.days.reduce((acc:number, day)=>{
+             acc['placements'] += day.placements;
+             acc['videos'] += day.videos;
+             acc['hours'] += day.hours;
+             acc['rvs'] += day.rvs;
+
+             return acc;
+         }, {placements:0, videos:0, hours:0, rvs:0});
+     }
+
+     static printTotalsShort(month:Month):string {
+         let totals = Month.totals(month);
+         return "Plc: "+totals.placements+ " Vid: "+totals.videos+" Hrs: "+totals.hours+" Rvs: "+totals.rvs;
+
+     }
+
+}
+
 export class Call extends Doc {
     name?: string;
     address?: string;
@@ -40,8 +120,7 @@ export class Call extends Doc {
     constructor(values: Object = {}) {
         super();
         Object.assign(this, values);
-    }
-    
+    }    
 }
 
 export class Placement extends Doc {
