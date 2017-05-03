@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, Events } from 'ionic-angular';
 import { Auth, DataProvider } from '../../providers';
-import { EmailComposer } from 'ionic-native';
+//import { EmailComposer } from '@ionic-native/email-composer';
 
 @Component({
   selector: 'page-about',
@@ -14,6 +14,7 @@ export class AboutPage {
   constructor(public navCtrl: NavController, 
               public navParams: NavParams, 
               public auth: Auth,
+              //public emailComposer: EmailComposer,
               public dataProvider: DataProvider, 
               public events:Events) {}
 
@@ -44,7 +45,7 @@ export class AboutPage {
       body: body+ s
     }
 
-    EmailComposer.open(email);
+//    EmailComposer..open(email);
   }
 
 
